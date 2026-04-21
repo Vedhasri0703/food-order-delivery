@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import OrderStats from "../components/OrderStats.jsx";
+import OrderStats from "../components/OrderStats";
 import Filter from "../pages/Filter";
 import Orders from "../pages/Orders.jsx";
 
