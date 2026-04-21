@@ -1,19 +1,17 @@
-import { useContext } from 'react';
-import { AppContext } from '../context/AppContext';
-import { Link } from 'react-router-dom';
+import { useOrder } from "../context/OrderContext";
+import OrderCard from "../components/OrderCard";
 
 const Orders = () => {
-    const { state } = useContext(AppContext);
+  const { state } = useOrder();
+  if (state.loading) return <p>Loading...</p>;
 
-    return (
-        <div className="orders-page">
-            {state.orders.map(order => (
-                <div key={order.orderId} data-testid="order-item" className="card">
-                    <h3>{order.restaurant}</h3>
-                    <p>Customer: {order.customerName}</p>
-                    <Link to={`/orders/${order.orderId}`}>View Details</Link>
-                </div>
-            ))}
-        </div>
-    );
+  return (
+    <div className="orders-container">
+      <h1>All Valid Orders</h1>
+      <div className="list">
+        {state.orders.map(o => <OrderCard key={o.orderId} order={o} />)}
+      </div>
+    </div>
+  );
 };
+export default Orders;
