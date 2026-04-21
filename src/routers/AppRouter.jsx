@@ -1,11 +1,14 @@
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import OrderStats from "../components/OrderStats";
 import Filter from "../pages/Filter";
-import Orders from "../pages/Orders.jsx";
+import Orders from "../pages/Orders";
+import NavBar from "../components/NavBar"; // Assuming you have a NavBar component
 
 const AppRouter = () => (
   <Router>
-    <MainLayout>
+    <NavBar /> {/* This replaces MainLayout */}
+    <main>
       <Routes>
         <Route path="/orders" element={<Orders />} />
         <Route path="/filter" element={<Filter />} />
@@ -13,7 +16,8 @@ const AppRouter = () => (
         <Route path="/" element={<Orders />} />
         <Route path="/orders/:id" element={<Orders />} />
       </Routes>
-    </MainLayout>
+    </main>
   </Router>
 );
+
 export default AppRouter;
