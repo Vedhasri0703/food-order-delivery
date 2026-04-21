@@ -3,10 +3,10 @@ import { useOrder } from "../context/OrderContext";
 import OrderCard from "../components/OrderCard";
 
 const Filter = () => {
-  const { state } = useOrder();
+  const { orders } = useOrder();
   const [query, setQuery] = useState("");
 
-  const filtered = state.orders.filter((o) =>
+  const filtered = orders.filter((o) =>
     o.restaurant.toLowerCase().includes(query.toLowerCase())
   );
 

@@ -1,41 +1,80 @@
-import { createContext, useContext, useReducer, useEffect } from "react";
-import { OrderReducer } from "../reducer/OrderReducer";
-import { getToken, getDataset } from "../api/api";
+import { createContext, useContext, useEffect, useReducer } from "react";
+import OrderReducer from "../reducer/OrderReducer";
+import { getDataset, getToken } from "../services/api";
 
-export const OrderContext = createContext();
+const initialState = {
+  orders: [],
+  loading: true,
+};
 
-export const OrderProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(OrderReducer, { orders: [], loading: true });
+const OrderContext = createContext();
+
+const OrderProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(OrderReducer, initialState);
+
+  const markOrderDelivered = (orderId) => {
+    dispatch({
+      type: "MARK_ORDER_DELIVERED",
+      payload: orderId,
+    });
+  };
+
+  const undoOrderDelivered = (orderId) => {
+    dispatch({
+      type: "UNDO_ORDER_DELIVERED",
+      payload: orderId,
+    });
+  };
 
   useEffect(() => {
-    const initApp = async () => {
+    const fetchOrders = async () => {
       try {
-        const auth = await getToken(
-          "E0323043",
-          "207933", 
-          "SETA");
-        const data = await getDataset(auth.token, auth.dataUrl);
+        const tokenRes = await getToken(
+          "E0323048",
+          "659759",
+          "setA"
+        );
 
-        const validOrders = data.filter((order) => {
-          const hasItems = order.items && order.items.length > 0;
-          const validQty = hasItems && order.items.every(i => i.quantity > 0);
-          const validPrice = typeof order.totalAmount === "number" && order.totalAmount > 0;
-          return hasItems && validQty && validPrice;
+        const rawOrders = await getDataset(
+          tokenRes.token,
+          tokenRes.dataUrl
+        );
+
+        const cleanedOrders = Array.isArray(rawOrders)
+          ? rawOrders.filter(
+              (order) =>
+                order &&
+                order.orderId &&
+                typeof order.restaurant === "string"
+            )
+          : [];
+
+        dispatch({
+          type: "SET_ORDERS",
+          payload: cleanedOrders,
         });
-
-        dispatch({ type: "SET_ORDERS", payload: validOrders });
-      } catch (err) {
-        console.error("Initialization Failed", err);
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        dispatch({ type: "SET_ORDERS", payload: [] });
       }
     };
-    initApp();
+
+    fetchOrders();
   }, []);
 
   return (
-    <OrderContext.Provider value={{ state, dispatch }}>
+    <OrderContext.Provider
+      value={{
+        orders: state.orders,
+        loading: state.loading,
+        markOrderDelivered,
+        undoOrderDelivered,
+      }}
+    >
       {children}
     </OrderContext.Provider>
   );
 };
 
+export default OrderProvider;
 export const useOrder = () => useContext(OrderContext);

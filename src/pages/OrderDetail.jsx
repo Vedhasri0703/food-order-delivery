@@ -3,8 +3,8 @@ import { useOrder } from "../context/OrderContext";
 
 const OrderDetail = () => {
   const { id } = useParams();
-  const { state, dispatch } = useOrder();
-  const order = state.orders.find((o) => o.orderId.toString() === id);
+  const { orders, markOrderDelivered } = useOrder();
+  const order = orders.find((o) => o.orderId.toString() === id);
 
   if (!order) return <h2 data-testid="not-found">Order not found</h2>;
 
@@ -23,7 +23,7 @@ const OrderDetail = () => {
       </div>
       <h3>Total: ${order.totalAmount}</h3>
       <p>Status: {order.status}</p>
-      <button onClick={() => dispatch({ type: "MARK_DELIVERED", payload: order.orderId })}>
+      <button onClick={() => markOrderDelivered(order.orderId)}>
         Mark as Delivered
       </button>
     </div>

@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { useOrder } from "../context/OrderContext";
 
 const Stats = () => {
-  const { state } = useOrder();
-  const { orders } = state;
+  const { orders } = useOrder();
 
   // Use reduce/filter for dynamic calculations
   const total = orders.length;
